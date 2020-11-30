@@ -8,9 +8,12 @@
 
     <v-spacer></v-spacer>
 
-    <v-btn v-if="!isLoggedIn" text v-bind:to="{ name: 'sign-in' }">
-      Sign In
-    </v-btn>
+    <v-btn v-if="!isLoggedIn" text v-bind:to="{ name: 'sign-up' }"
+      >Sign Up</v-btn
+    >
+    <v-btn v-if="!isLoggedIn" text v-bind:to="{ name: 'sign-in' }"
+      >Sign In</v-btn
+    >
     <v-btn text v-bind:to="{ name: 'about-us' }">About Us</v-btn>
 
     <v-menu v-if="isLoggedIn" offset-y>
@@ -36,7 +39,7 @@ export default {
   computed: {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
-    }
+    },
   },
 
   methods: {
@@ -45,7 +48,7 @@ export default {
       if (this.$router.currentRoute.name != "home-page") {
         this.$router.push({ name: "home-page" });
       }
-    }
-  }
+    },
+  },
 };
 </script>

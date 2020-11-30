@@ -16,7 +16,7 @@ export default new Vuex.Store({
   // Cannot update state directly; use a `mutation` (below).
   // Access in components as `this.$store.state.currentAccount`
   state: {
-    currentUserState: null
+    currentUserState: null,
   },
 
   // A "getter" returns a computed property from the store, similar
@@ -26,7 +26,7 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn(state) {
       return state.currentUserState !== null;
-    }
+    },
   },
 
   // Make changes to global state.
@@ -38,6 +38,6 @@ export default new Vuex.Store({
     },
     logOut(state) {
       state.currentUserState = null;
-    }
-  }
+    },
+  },
 });

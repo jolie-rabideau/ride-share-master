@@ -49,8 +49,54 @@ async function init() {
       config: {
         description: "Retrieve all users",
       },
-      handler: (request, h) => {
-        return User.query();
+      handler: () => User.query(),
+    },
+
+    {
+      method: "POST",
+      path: "/users",
+      config: {
+        description: "Sign up",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+            email: Joi.string().email().required(),
+            phone: Joi.string().required(),
+            password: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request) => {
+        const existingUser = await User.query()
+          .where("email", request.payload.email)
+          .first();
+        if (existingUser) {
+          return {
+            ok: false,
+            msge: `User '${request.payload.email}' already exists`,
+          };
+        }
+
+        const newUser = await User.query().insert({
+          firstName: request.payload.firstName,
+          lastName: request.payload.lastName,
+          email: request.payload.email,
+          phone: request.payload.phone,
+          password: request.payload.password,
+        });
+
+        if (newUser) {
+          return {
+            ok: true,
+            msge: `Created user '${request.payload.email}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't create user with email '${request.payload.email}'`,
+          };
+        }
       },
     },
 
@@ -61,19 +107,20 @@ async function init() {
         description: "Log in",
         validate: {
           payload: Joi.object({
-            email: Joi.string().email().required(),
-            password: Joi.string().min(8).required(),
+            email: Joi.string()
+              .email()
+              .required(),
+            password: Joi.string()
+              .min(8)
+              .required(),
           }),
         },
       },
-      handler: async (request, h) => {
+      handler: async (request) => {
         const user = await User.query()
           .where("email", request.payload.email)
           .first();
-        if (
-          user &&
-          (await user.verifyPassword(request.payload.password))
-        ) {
+        if (user && (await user.verifyPassword(request.payload.password))) {
           return {
             ok: true,
             msge: `Logged in successfully as '${request.payload.email}'`,
@@ -92,7 +139,6 @@ async function init() {
         }
       },
     },
-
   ]);
 
   // Start the server.
