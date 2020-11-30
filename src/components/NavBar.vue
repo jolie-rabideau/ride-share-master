@@ -26,6 +26,12 @@
       </template>
 
       <v-list>
+        <v-list-item v-bind:to="{ name: 'users' }">
+          <v-list-item-title>Account</v-list-item-title>
+        </v-list-item>
+        
+        <v-divider></v-divider>
+        
         <v-list-item @click="signOut">
           <v-list-item-title>Sign Out</v-list-item-title>
         </v-list-item>
@@ -48,7 +54,7 @@ export default {
       if (this.$router.currentRoute.name != "home-page") {
         this.$router.push({ name: "home-page" });
       }
-    },
-  },
+    }
+  }
 };
 </script>

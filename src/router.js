@@ -6,6 +6,7 @@ import SignIn from "./pages/SignIn.vue";
 import SignUp from "./pages/SignUp.vue";
 import About from "./pages/About.vue";
 import Users from "./pages/Users.vue";
+import Account from "./pages/Account.vue";
 
 Vue.use(Router);
 
@@ -17,6 +18,7 @@ export default new Router({
     { name: "sign-in", path: "/sign-in", component: SignIn },
     { name: "sign-up", path: "/sign-up", component: SignUp },
     { name: "about-us", path: "/about-us", component: About },
-    { name: "users", path: "/users", component: Users }
+    { name: "users", path: "/users", component: Users },
+    { name: "account", path: "/account", component: Account }
   ]
 });
