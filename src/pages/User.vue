@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Account</h4>
+      <h4 class="display-1">Account Information</h4>
       
       <v-data-table
         class="elevation-1"
@@ -14,6 +14,14 @@
             <td>{{ item.firstName }}</td>
             <td>{{ item.lastName }}</td>
             <td>{{ item.phoneNumber }}</td>
+            <td>
+              <v-icon @click="deleteUser(item)">
+                mdi-delete
+              </v-icon>
+              <v-icon small class="ml-2" @click="updateUser(item)">
+                mdi-arrow
+              </v-icon>
+            </td>
           </tr>
         </template>
       </v-data-table>
@@ -31,7 +39,7 @@
 
 <script>
 export default {
-  name: "Users",
+  name: "User",
   data: function() {
     return {
       headers: [
@@ -70,6 +78,19 @@ export default {
       if (currentUser && currentUser.id === item.id) {
         return "currentUser";
       }
+    },
+    updateUser(item) {
+      console.log("UPDATE", JSON.stringify(item, null, 2));
+      this.showSnackbar("Cannot update.");
+    },
+    deleteAccount(item) {
+      this.$axios.delete(`/users/${item.id}`).then(response => {
+        if (response.status == 200) {
+          this.users = this.users.filter(
+            user => user.id !== item.id
+          );
+        }
+      });
     }
   }
 };

@@ -80,6 +80,70 @@ async function init() {
       },
       handler: () => Location.query(),
     },
+    
+    {
+      method: "GET",
+      path: "/users/{id}",
+      config: {
+        description: "Retrieve users by ID",
+        validate: {
+          params: Joi.object({
+            id: Joi.number().integer().min(1).required()
+          })
+        }
+      },
+      handler: (request, h) => {
+        return User.query()
+          .findById(request.params.id)
+          .then(rowsFound => {
+            if (rowsFound) {
+              return h.response({
+                ok: true,
+                message: `Found User with ID number: '${request.params.id}'`,
+                results: rowsFound
+              })
+              .code(200);
+            } else {
+              return h.response({
+                ok: false,
+                message: `No User with ID number: '${request.params.id}' found`,
+              })
+              .code(404);
+            }
+          });
+      }
+    },
+    
+    {
+      method: "DELETE",
+      path: "/users/{id}",
+      config: {
+        description: "Delete a user by ID",
+        validate: {
+          params: Joi.object({
+            id: Joi.number().integer().min(1).required()
+          })
+        }
+      },
+      handler: (request, h) => {
+        return User.query()
+          .deleteById(request.params.id)
+          .then((rowsDeleted_ => {
+            if (rowsDeleted === 1) {
+              return {
+                ok: true,
+                message: `User with ID number: '${request.params.id}' has been deleted`,
+              };
+            } else {
+              return {
+                ok: false,
+                message: `User with ID number: '${request.params.id}' could not be deleted at this time`,
+              };
+            }
+          }
+        ));
+      }
+    },
 
     {
       method: "POST",
