@@ -16,6 +16,13 @@ objection.Model.knex(knex);
 // Models
 const User = require("./models/User");
 const Ride = require("./models/Ride");
+const Location = require("./models/Location");
+const Driver = require("./models/Driver");
+const Drivers = require("./models/Drivers");
+const Passenger = require("./models/Passenger.js");
+const State = require("./models/State.js");
+const Vehicle_Type = require("./models/vehicleType.js");
+const Vehicle = require("./models/Vehicle.js");
 
 // Hapi
 const Joi = require("@hapi/joi"); // Input validation
@@ -51,6 +58,22 @@ async function init() {
       },
       handler: () => User.query(),
     },
+
+    {
+      method: "GET", // Get driver collection
+      path: "/drivers",
+      handler: async (request, h) => {
+        return Driver.query();
+      },
+    },
+
+    {
+      method: "GET", // Get passenger collection
+      path: "/passengers",
+      handler: async (request, h) => {
+        return Passenger.query().withGraphFetched("user");
+      },
+    },
     
     {
       method: "GET",
@@ -59,6 +82,22 @@ async function init() {
         description: "Retrieve all rides",
       },
       handler: () => Ride.query(),
+    },
+
+    {
+      method: "GET", // Get vehicle collection
+      path: "/vehicles",
+      handler: async (request, h) => {
+        return Vehicle.query();
+      },
+    },
+
+    {
+      method: "GET", // Get vehicle-type collection
+      path: "/vehicle-types",
+      handler: async (request, h) => {
+        return Vehicle_Type.query();
+      },
     },
 
     {
@@ -112,6 +151,49 @@ async function init() {
             }
           });
       }
+    },
+
+    {
+      method: "GET",
+      path: "/drivers/{id}",
+      options: {
+        validate: {
+          params: Joi.object({
+            id: Joi.number()
+              .integer()
+              .min(1),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        let driver = await Driver.query()
+          .where("id", request.params.id)
+          .first();
+        if (driver) return driver;
+        return Boom.notFound(`No driver with ID ${request.params.id}`);
+      },
+    },
+
+    {
+      method: "GET",
+      path: "/passengers/{id}",
+      options: {
+        validate: {
+          params: Joi.object({
+            id: Joi.number()
+              .integer()
+              .min(1),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        let passenger = await Passenger.query()
+          .where("passengerId", request.params.id)
+          .first()
+          .withGraphFetched("user"); //NOTE should do some more complex data manip for UI here
+        if (passenger) return passenger;
+        return Boom.notFound(`No passenger with ID ${request.params.id}`);
+      },
     },
     
     {
@@ -228,6 +310,56 @@ async function init() {
           return {
             ok: false,
             msge: "Invalid email or password",
+          };
+        }
+      },
+    },
+
+    {
+      method: "POST", // Register user as driver
+      path: "/drivers",
+      options: {
+        validate: {
+          payload: Joi.object({
+            userId: Joi.number().integer()
+              .min(1)
+              .max(1000)
+              .required(),
+            licenseNumber: Joi.string()
+              .min(1)
+              .max(30)
+              .required(),
+            licenseState: Joi.string()
+              .min(1)
+              .max(2)
+              .required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const existingDriver = await Driver.query()
+          .where("userId", request.payload.userId)
+          .first();
+        if (existingDriver) {
+          return {
+            ok: false,
+            msge: `This user is already a driver '${request.payload.email}'`,
+          };        }
+        let driver = await Driver.query().insert({
+          userId: request.payload.userId,
+          licenseNumber: request.payload.licenseNumber,
+          licenseState: request.payload.licenseState,
+        });
+
+        if (driver) {
+          return {
+            ok: true,
+            msge: `Created account '${request.payload.email}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't create account with email '${request.payload.email}'`,
           };
         }
       },

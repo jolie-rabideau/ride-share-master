@@ -9,7 +9,7 @@
         v-bind:items="users"
       >
         <template v-slot:item="{ item }">
-          <tr v-bind:class="itemClass(item)">
+         <!-- <tr v-bind:class="itemClass(item)"> -->
             <td>{{ item.email }}</td>
             <td>{{ item.firstName }}</td>
             <td>{{ item.lastName }}</td>
@@ -22,13 +22,13 @@
                 mdi-arrow
               </v-icon>
             </td>
-          </tr>
+        <!--  </tr> -->
         </template>
       </v-data-table>
 
       <v-snackbar v-model="snackbar.show">
         {{ snackbar.text }}
-        <v-btn color="blue" text @click="snackbar.show = false">
+        <v-btn color="red" text @click="snackbar.show = false">
           Close
         </v-btn>
       </v-snackbar>
@@ -72,13 +72,7 @@ export default {
       this.snackbar.text = text;
       this.snackbar.show = true;
     },
-    // Calculate the CSS class for an item
-    itemClass(item) {
-      const currentUser = this.$store.state.currentUser;
-      if (currentUser && currentUser.id === item.id) {
-        return "currentUser";
-      }
-    },
+   
     updateUser(item) {
       console.log("UPDATE", JSON.stringify(item, null, 2));
       this.showSnackbar("Cannot update.");
@@ -98,6 +92,6 @@ export default {
 
 <style>
 .currentUser {
-  background: lightcoral;
+  background: grey;
 }
 </style>
