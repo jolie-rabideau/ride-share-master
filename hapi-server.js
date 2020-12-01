@@ -51,6 +51,35 @@ async function init() {
       },
       handler: () => User.query(),
     },
+    
+    {
+      method: "GET",
+      path: "/rides",
+      config: {
+        description: "Retrieve all rides",
+      },
+      handler: () => Ride.query(),
+    },
+
+    {
+      method: "GET",
+      path: "/rides/{id}",
+      config: {
+        description: "Retrieve ride by id",
+      },
+      handler: (request, h) => {
+        return User.query().where(request.params.id === User.id)
+      },
+    },
+
+    {
+      method: "GET",
+      path: "/locations",
+      config: {
+        description: "Retrieve all locations",
+      },
+      handler: () => Location.query(),
+    },
 
     {
       method: "POST",
